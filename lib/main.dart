@@ -134,48 +134,64 @@ class _NotasPageState extends State<NotasPage> {
         itemCount: _notas.length,
         itemBuilder: (context, index) {
           final nota = _notas[index];
-          return GestureDetector(
-            onTap: () => _mostrarDetalleNota(context, nota),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2), // Color y opacidad de la sombra
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                      offset: Offset(2, 2), // Cambia la posición de la sombra
-                    ),
-                  ],
-                ),
-                child: ListTile(
-                  title: Text(nota.titulo),
-                  subtitle: Text(_limitarDescripcion(nota.descripcion)),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ActualizarNotaPage(nota: nota),
-                            ),
-                          );
-                          if (result == true) {
-                            _cargarNotas(); // Recargar las notas si se actualizó una nota
-                          }
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _confirmarEliminarNota(context, nota),
+          return Dismissible(
+            key: Key(nota.id.toString()),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              _confirmarEliminarNota(context, nota);
+            },
+            background: Container(
+              color: Colors.red,
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              alignment: AlignmentDirectional.centerEnd,
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+            child: GestureDetector(
+              onTap: () => _mostrarDetalleNota(context, nota),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2), // Color y opacidad de la sombra
+                        spreadRadius: 2,
+                        blurRadius: 4,
+                        offset: Offset(2, 2), // Cambia la posición de la sombra
                       ),
                     ],
+                  ),
+                  child: ListTile(
+                    title: Text(nota.titulo),
+                    subtitle: Text(_limitarDescripcion(nota.descripcion)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ActualizarNotaPage(nota: nota),
+                              ),
+                            );
+                            if (result == true) {
+                              _cargarNotas(); // Recargar las notas si se actualizó una nota
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => _confirmarEliminarNota(context, nota),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
